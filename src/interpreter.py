@@ -30,35 +30,18 @@ class Interpreter:
 
     def __init__(self, main):
         self.main = main
-        self.time = 0
-
-        self.a = 0.0
-        self.b = 0.0
-        self.c = 0.0
-        self.d = 0.0
-
-        # self.x = 0.0
-        # self.y = 0.0
-        # self.z = 0.0
-        # self.r = 0.0
 
 
     def interpret(self, packet):
-        self.time = int.from_bytes(packet.data[0:4], byteorder='big', signed=False)
+        time = int.from_bytes(packet.data[0:4], byteorder='big', signed=False)
 
-        self.a = struct.unpack('>f', packet.data[4:8])
-        self.b = struct.unpack('>f', packet.data[8:12])
-        self.c = struct.unpack('>f', packet.data[12:16])
-        self.d = struct.unpack('>f', packet.data[16:20])
+        a = struct.unpack('>f', packet.data[4:8])
+        b = struct.unpack('>f', packet.data[8:12])
+        c = struct.unpack('>f', packet.data[12:16])
+        d = struct.unpack('>f', packet.data[16:20])
 
-        # print(f"{self.time:} : ( {self.a[0]: 9.4f} / {self.b[0]: 9.4f} / {self.c[0]: 9.4f} ) , r: {self.d[0]:9.4f}")
         # print("{:11d} : ( {: 9.4f} / {: 9.4f} / {: 9.4f} ) , r: {:9.4f}\r".format(
         #     self.time, self.a[0], self.b[0], self.c[0], self.d[0]
         # ))
 
-        print(self.time, self.a[0], self.b[0], self.c[0], self.d[0], sep=',', end='\r')
-
-        # self.x = struct.unpack('f', packet.data[5:9])
-        # self.y = struct.unpack('f', packet.data[5:9])
-        # self.z = struct.unpack('f', packet.data[5:9])
-        # self.r = struct.unpack('f', packet.data[5:9])
+        print(time, a[0], b[0], c[0], d[0], sep=',', end='\r')
