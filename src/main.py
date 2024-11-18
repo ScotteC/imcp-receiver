@@ -22,7 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
-
+import argparse
+import signal
 import sys
 from time import sleep
 
@@ -31,22 +32,36 @@ from interpreter import Interpreter
 
 
 class App:
-    def __init__(self):
+    def __init__(self, device='/dev/ttyUSB0', baud=115200):
+        signal.signal(signal.SIGINT, self.exit)
+        signal.signal(signal.SIGTERM, self.exit)
+
+        self.running = True
         self.connection = Transceiver(self)
         self.interpreter = Interpreter(self)
         self.connection.bind_packet_complete_callback(self.interpreter.interpret)
-        self.connection.open("/dev/cu.usbserial-14440", 230400)
+        self.connection.open(device, baud)
+
+    def exit(self, signum, frame):
+        self.running = False
+        print("Exiting...")
 
     def exec(self):
-        while True:
+        while self.running:
             sleep(1)
-
-
-    def end(self):
         self.connection.close()
+        print("Connection closed")
 
 
 if __name__ == "__main__":
-    app = App()
+    parser = argparse.ArgumentParser(description='Simple imcp receiver, interpreter and logger')
+    parser.add_argument('--device', type=str,
+                        default='/dev/ttyUSB0',
+                        help='Path to serial device')
+    parser.add_argument('--baud', type=int,
+                        default=115200,
+                        help='Baud rate for serial connection')
+    args = parser.parse_args()
+
+    app = App(args.device, args.baud)
     app.exec()
-    app.end()
